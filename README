@@ -1,3 +1,8 @@
 A reward game  write by html5.
 Use localStorage to save data.
 email:gwikimo@gmail.com
+
+description:
+1. save the user's photo name in localstorage,the key is user_index, the values is photo name,user photo path is pics;
+2.generate random num of the index ,then get the reward user through localstorage by index.
+3.can auto generate reward or by hand.
