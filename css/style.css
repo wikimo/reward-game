@@ -1,0 +1,12 @@
+*{padding:0;margin:0;}
+body{font:18px 'Microsoft Yahei';}
+img{border:none;}
+ul,ol{list-style:none;}
+
+#main{width:800px;margin:50px auto;}
+ .images{width:200px;margin:10px;}
+ 
+button{background:#777;border:none;padding:2px 8px;color:#fff;font-size:18px;border-radius:5px;font:18px/2em 'Microsoft Yahei';cursor:pointer;margin:10px;}
+button:hover{background:#FF9900}
+ 
+ #file-list{margin:10px }

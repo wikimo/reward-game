@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+ <head>
+  <title> Reward Game</title>
+  <meta name="author" content="Wiki.M gwikimo@gmail.com">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <link rel="stylesheet" href="css/style.css" type="text/css"/>
+ </head>
+
+ <body>
+<div id="main">
+	<h3>Import Data£º</h3>
+	<input type="file"   multiple="true" onchange="importDB(this.files)"  value="import data"/>
+
+	<button type="button" onclick="getRewardAuto()">Auto Reward</button>
+	<button type="button" onclick="getReward()">Get Reward</button>
+	<button type="button" onclick="clearDB()">Clear Data</button>
+	<button type="button" onclick="getLocalStorageLength()">Count</button>
+	
+	<div id="reward"></div>
+</div>
+
+
+
+ </body>
+</html>
+
+<script type="text/javascript">
+/*save reward data in localStorage,
+	the key is user_index,the value is user's photo name
+*/
+function importDB(myFiles){
+	for(var i = 0;i < myFiles.length;i++){
+		var reader = new FileReader();
+		reader.readAsDataURL(myFiles[i]);
+
+		localStorage.setItem('user_'+i,myFiles[i].name);
+	}
+	alert('import data ok...');
+}
+
+/*restore game*/
+function clearDB(){
+	localStorage.clear();
+	alert('clear data ok...');
+}
+
+function getReward(){
+	if(localStorage.length == 0){
+		alert('game over!');
+		return false;
+	}
+	var random =  getRandom(0,localStorage.length - 1);
+	var rewardKey = localStorage.key(random);  
+	var reward = localStorage.getItem(rewardKey);
+	//console.log(reward);
+	
+	var span = document.createElement('span');
+	span.innerHTML = ['<img class="images" src="pics/',  reward,'" title="', reward, '"/>'].join('');
+	document.getElementById('reward').insertBefore(span, null);
+	
+	//log reward user info
+	localStorage.setItem('reward_'+rewardKey,reward);
+	
+	localStorage.removeItem(rewardKey);
+}
+
+var count = 0;
+function autoReward(){
+	if(count > 5){
+			clearInteval(autoReward);
+			alert("it's ok...");
+			return false;
+		}else{
+			getReward();
+			count++;
+	}	
+}
+
+function getRewardAuto(){
+	
+	setInterval(autoReward,2000);
+}
+
+/*return a random between min and max*/
+function getRandom(min,max){
+	if(min < 0)
+		min = 0;
+	if(max < 0)	
+		max = 0;
+		
+	return parseInt(Math.random()*(max-min+1)+min);
+}
+
+function getLocalStorageLength(){
+	alert( localStorage.length);
+}
+</script>
