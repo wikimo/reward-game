@@ -17,27 +17,41 @@
 	<button type="button" onclick="getReward()">Get Reward</button>
 	<button type="button" onclick="clearDB()">Clear Data</button>
 	<button type="button" onclick="getLocalStorageLength()">Count</button>
-	
+	<button type="button" onclick="setImageEveryTime()">setImage</button>
+	<div id="all-user"><span></span></div>
 	<div id="reward"></div>
 </div>
-
-
-
  </body>
 </html>
-
 <script type="text/javascript">
 /*save reward data in localStorage,
 	the key is user_index,the value is user's photo name
 */
 function importDB(myFiles){
+	var allUser = {};
+	var allUserTemp = {};
+	var rewardUser = {};
+	allUser.data =  new Array();
+	rewardUser.data = new Array();
+	
 	for(var i = 0;i < myFiles.length;i++){
 		var reader = new FileReader();
 		reader.readAsDataURL(myFiles[i]);
-
-		localStorage.setItem('user_'+i,myFiles[i].name);
+		allUser.data[i] = myFiles[i].name;
 	}
+	
+	for(var i in allUser){
+		allUserTemp[i] = allUser[i];
+	}
+	
+	localStorage.setItem('alluser',JSON.stringify(allUser));
+	localStorage.setItem('allusertemp',JSON.stringify(allUserTemp));
+	localStorage.setItem('rewarduser',JSON.stringify(rewardUser));
 	alert('import data ok...');
+	
+	setInterval(function(){
+		setImageEveryTime(allUser);
+	},100);
 }
 
 /*restore game*/
@@ -47,40 +61,42 @@ function clearDB(){
 }
 
 function getReward(){
-	if(localStorage.length == 0){
+	var allUserTemp =  JSON.parse( localStorage.getItem( 'allusertemp' )) ;
+	//console.log(allUserTemp.data.length);
+	if(allUserTemp.data.length == 0){
 		alert('game over!');
 		return false;
 	}
-	var random =  getRandom(0,localStorage.length - 1);
-	var rewardKey = localStorage.key(random);  
-	var reward = localStorage.getItem(rewardKey);
-	//console.log(reward);
+	var random =  getRandom(0,allUserTemp.data.length - 1);
+	var reward = allUserTemp.data[random];  
+
 	
 	var span = document.createElement('span');
 	span.innerHTML = ['<img class="images" src="pics/',  reward,'" title="', reward, '"/>'].join('');
 	document.getElementById('reward').insertBefore(span, null);
 	
-	//log reward user info
-	localStorage.setItem('reward_'+rewardKey,reward);
+	//update allUserTemp
+	allUserTemp.data.splice(random,1);
+	localStorage.setItem('allusertemp',JSON.stringify(allUserTemp));
 	
-	localStorage.removeItem(rewardKey);
-}
-
-var count = 0;
-function autoReward(){
-	if(count > 5){
-			clearInteval(autoReward);
-			alert("it's ok...");
-			return false;
-		}else{
-			getReward();
-			count++;
-	}	
+	//log reward user info
+	var rewardUser =  JSON.parse( localStorage.getItem( 'rewarduser' )) ;
+	rewardUser.data.push(reward);
+	localStorage.setItem('rewarduser',JSON.stringify(rewardUser));
 }
 
 function getRewardAuto(){
-	
-	setInterval(autoReward,2000);
+	var count = 0;
+	var autoRewardId = setInterval(function(){
+			if(count > 5){
+				clearInterval(autoRewardId);
+				alert("it's ok...");
+				return;
+			}else{
+				getReward();
+				count++;
+			}	
+	},2000);
 }
 
 /*return a random between min and max*/
@@ -95,5 +111,19 @@ function getRandom(min,max){
 
 function getLocalStorageLength(){
 	alert( localStorage.length);
+}
+
+function setImageEveryTime(allUser){
+	//var allUser =  JSON.parse( localStorage.getItem( 'alluser' )) ;
+	
+	var random =  getRandom(0,allUser.data.length - 1);
+	var reward = 	allUser.data[random];  
+	
+	var allUserContainer = document.getElementById('all-user');
+	var span = document.createElement('span');
+	span.innerHTML = ['<img class="images" src="pics/',  reward,'" title="', reward, '"/>'].join('');
+	document.getElementById('all-user').insertBefore(span, null);
+	allUserContainer.replaceChild(span,allUserContainer.firstChild);
+	
 }
 </script>
